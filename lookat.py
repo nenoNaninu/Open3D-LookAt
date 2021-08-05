@@ -11,7 +11,7 @@ def create_translation_mat(x: float, y: float, z: float):
     return trans_mat
 
 
-def create_scale_mat(x, y, z):
+def create_scale_mat(x: float, y: float, z: float):
     scale_mat = np.eye(4)
 
     scale_mat[0, 0] = x
