@@ -47,7 +47,6 @@ def create_look_at_mat(eye, target, up=[0.0, 1.0, 0.0]):
     ])
 
     trans_mat = create_translation_mat(-eye[0], -eye[1], -eye[2])
-
     scale_mat = create_scale_mat(1, -1, -1)
 
     tmp = np.dot(rotate_mat, trans_mat)
@@ -57,10 +56,16 @@ def create_look_at_mat(eye, target, up=[0.0, 1.0, 0.0]):
 
 
 if __name__ == "__main__":
+
+    isSquare = False
+
     coordinate_mesh_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=1, origin=[0, 0, 0])
 
     visualizer = o3d.visualization.Visualizer()
-    visualizer.create_window(width=640, height=480, visible=False)
+
+    width, height = (480, 480) if isSquare else (640, 480)
+
+    visualizer.create_window(width=width, height=height, visible=False)
 
     visualizer.add_geometry(coordinate_mesh_frame)
 
@@ -68,8 +73,9 @@ if __name__ == "__main__":
 
     camera_params = view_control.convert_to_pinhole_camera_parameters()
 
-    camera_intrinsic = o3d.camera.PinholeCameraIntrinsic(
-        o3d.camera.PinholeCameraIntrinsicParameters.PrimeSenseDefault)
+    if isSquare:
+        intrinsic = o3d.camera.PinholeCameraIntrinsic(480, 480, 415.7, 415.7, 239.5, 239.5)
+        camera_params.intrinsic = intrinsic
 
     sample_num = 100
     for idx in range(0, sample_num):
@@ -83,8 +89,6 @@ if __name__ == "__main__":
         camera_params.extrinsic = extrinsic_mat
 
         view_control.convert_from_pinhole_camera_parameters(camera_params)
-
-        camera_params = view_control.convert_to_pinhole_camera_parameters()
 
         image = visualizer.capture_screen_float_buffer(True)
 
